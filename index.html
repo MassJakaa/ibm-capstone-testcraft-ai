@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TestCraft AI - Intelligent Test Suite & Edge-Case Generator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            ibm: {
+              blue: '#0f62fe',
+              hover: '#0353e9',
+              dark: '#161616',
+              darker: '#121212',
+              card: '#262626',
+              cyan: '#1192e8',
+              teal: '#009d9a',
+              purple: '#8a3ffc'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 border-b border-blue-800/40 px-4 py-2 text-xs flex justify-between items-center no-print">
+    <div class="flex items-center space-x-2">
+      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-400/30">
+        <i class="fa-solid fa-graduation-cap mr-1.5"></i> IBM SkillsBuild University Project
+      </span>
+      <span class="text-slate-300 hidden md:inline">Track: <strong>IT AI Agent Development</strong></span>
+      <span class="text-slate-400">|</span>
+      <span class="text-slate-300">Topic: <strong>Test Case Generator</strong></span>
+    </div>
+    <div class="flex items-center space-x-3 text-slate-300">
+      <span class="flex items-center">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block mr-1.5 agent-live-dot"></span>
+        <span class="text-emerald-400 font-mono text-[11px]">IBM Bob Engine: Active</span>
+      </span>
+      <button id="btnPromptModal" class="text-blue-300 hover:text-white transition flex items-center space-x-1 font-semibold underline decoration-blue-500 underline-offset-2">
+        <i class="fa-solid fa-code-fork mr-1"></i> Lihat Prompt 3-Layer
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-6 py-3.5 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-bold text-xl">
+        <i class="fa-solid fa-vial-virus"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            TestCraft <span class="text-blue-400 font-semibold text-lg">AI</span>
+          </h1>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-blue-300 border border-slate-700 font-mono font-medium">v1.2.0</span>
+        </div>
+        <p class="text-xs text-slate-400">Automated Test Suite & Edge-Case Synthesis Agent for IBM Bob</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions in Header -->
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-1 bg-slate-800/80 p-1 rounded-lg border border-slate-700">
+        <label for="samplePreset" class="text-xs text-slate-400 px-2 flex items-center">
+          <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-amber-400"></i> Sample:
+        </label>
+        <select id="samplePreset" class="bg-slate-900 text-slate-200 text-xs rounded border border-slate-700 py-1 px-2.5 focus:outline-none focus:border-blue-500 cursor-pointer">
+          <option value="ecommerce">🛒 E-Commerce Checkout (Python)</option>
+          <option value="auth">🔐 User Auth & Password Policy (JS)</option>
+          <option value="bank">💳 Bank Transfer & Concurrency (Python)</option>
+          <option value="userstory">📋 Agile Story (BDD Cucumber)</option>
+        </select>
+        <button id="btnLoadPreset" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2.5 py-1 rounded transition flex items-center font-medium">
+          Load
+        </button>
+      </div>
+
+      <a href="#about-project" class="hidden lg:flex items-center space-x-1 text-xs text-slate-400 hover:text-slate-200 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 transition">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Dokumentasi</span>
+      </a>
+
+      <button id="btnHeaderExport" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center space-x-1.5 font-medium">
+        <i class="fa-solid fa-download text-slate-400"></i>
+        <span>Export Test</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="flex-1 max-w-[1680px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN: Input, Context Engineering & Controls (5 Cols) -->
+    <section class="lg:col-span-5 flex flex-col space-y-4">
+      
+      <!-- Card: Specification & Code Input -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col flex-1">
+        
+        <!-- Header of Left Card -->
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold border border-blue-500/30">1</span>
+            <h2 class="text-sm font-semibold text-white tracking-wide uppercase">Spesifikasi & Konteks Input</h2>
+          </div>
+          <span class="text-xs text-slate-400 font-mono" id="inputStats">0 baris | 0 karakter</span>
+        </div>
+
+        <!-- Controls: Input Type & Target Language -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">
+              <i class="fa-solid fa-file-code text-slate-400 mr-1"></i> Tipe Input:
+            </label>
+            <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+              <button id="typeCode" class="inputTypeBtn active bg-blue-600 text-white text-[11px] py-1 rounded font-medium text-center transition">
+                Code
+              </button>
+              <button id="typeStory" class="inputTypeBtn text-slate-400 hover:text-slate-200 text-[11px] py-1 rounded font-medium text-center transition">
+                Story
+              </button>
+              <button id="typeApi" class="inputTypeBtn text-slate-400 hover:text-slate-200 text-[11px] py-1 rounded font-medium text-center transition">
+                API
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label for="targetFramework" class="block text-xs font-medium text-slate-300 mb-1.5">
+              <i class="fa-solid fa-cubes text-slate-400 mr-1"></i> Target Framework:
+            </label>
+            <select id="targetFramework" class="w-full bg-slate-950 text-slate-200 text-xs rounded-lg border border-slate-800 py-1.5 px-3 focus:outline-none focus:border-blue-500">
+              <option value="pytest">Python (pytest + mock)</option>
+              <option value="jest">JavaScript (Jest / Vitest)</option>
+              <option value="junit">Java (JUnit 5 + Mockito)</option>
+              <option value="go">Go (testing + testify)</option>
+              <option value="gherkin">BDD (Gherkin Feature)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Checkbox Options: Test Coverage Scope -->
+        <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 mb-4">
+          <span class="text-xs font-medium text-slate-300 block mb-2">
+            <i class="fa-solid fa-shield-halved text-blue-400 mr-1.5"></i> Cakupan Pengujian AI Agent:
+          </span>
+          <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition">
+              <input type="checkbox" id="chkHappyPath" checked class="rounded border-slate-700 text-blue-600 focus:ring-0">
+              <span>Happy Path (Positive)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition">
+              <input type="checkbox" id="chkEdgeCases" checked class="rounded border-slate-700 text-blue-600 focus:ring-0">
+              <span>Boundary & Extreme Values</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition">
+              <input type="checkbox" id="chkNegative" checked class="rounded border-slate-700 text-blue-600 focus:ring-0">
+              <span>Negative & Error Raising</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition">
+              <input type="checkbox" id="chkSecurity" checked class="rounded border-slate-700 text-blue-600 focus:ring-0">
+              <span>Security (SQLi/XSS/Auth)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Context Engineering Extra Constraints -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="contextConstraints" class="text-xs font-medium text-slate-300 flex items-center">
+              <i class="fa-solid fa-sliders text-indigo-400 mr-1.5"></i> Custom Constraints (Layer 3 Context):
+            </label>
+            <span class="text-[11px] text-slate-500">Opsional</span>
+          </div>
+          <input type="text" id="contextConstraints" placeholder="Contoh: Mock database, gunakan parameterized tests, target coverage > 95%" 
+                 value="Gunakan parameterized tests, mock dependensi eksternal, validasi tipe ketat, bebas lint error"
+                 class="w-full bg-slate-950 text-slate-200 text-xs rounded-lg border border-slate-800 py-2 px-3 focus:outline-none focus:border-blue-500 placeholder-slate-600 font-mono">
+        </div>
+
+        <!-- Code / Specification Input Textarea -->
+        <div class="flex-1 flex flex-col mb-4">
+          <div class="flex justify-between items-center mb-1.5">
+            <label for="sourceInput" class="text-xs font-medium text-slate-300 flex items-center">
+              <i class="fa-solid fa-keyboard text-slate-400 mr-1.5"></i> Source Code / Spesifikasi Logika:
+            </label>
+            <div class="flex space-x-2">
+              <button id="btnClearInput" class="text-slate-500 hover:text-red-400 text-xs transition" title="Bersihkan input">
+                <i class="fa-solid fa-trash-can mr-1"></i> Bersihkan
+              </button>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[300px]">
+            <textarea id="sourceInput" spellcheck="false" 
+                      class="w-full h-full min-h-[300px] bg-slate-950 text-slate-200 font-mono text-xs p-4 rounded-xl border border-slate-800 focus:outline-none focus:border-blue-500 resize-none leading-relaxed" 
+                      placeholder="// Masukkan fungsi, class, atau user story di sini...
+// Atau klik tombol 'Load' di bagian atas untuk mencoba sample e-commerce checkout."></textarea>
+          </div>
+        </div>
+
+        <!-- Primary Trigger Button -->
+        <div class="pt-2">
+          <button id="btnGenerateTests" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition flex items-center justify-center space-x-2 group">
+            <i class="fa-solid fa-microchip group-hover:rotate-12 transition"></i>
+            <span>Sintesis Test Suite dengan IBM Bob Agent</span>
+            <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono font-normal">Ctrl+Enter</span>
+          </button>
+          <p class="text-[11px] text-slate-500 text-center mt-2">
+            Menerapkan arsitektur prompt 3-layer (Role & Context, Task, Constraints) terverifikasi.
+          </p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: Output, Playground & Test Runner Simulator (7 Cols) -->
+    <section class="lg:col-span-7 flex flex-col space-y-4">
+
+      <!-- Metrics Summary Ribbon -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3 shadow-md">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg border border-blue-500/20">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-white font-mono" id="metricTotalTests">14</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Total Test Cases</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3 shadow-md">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/20">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-emerald-400 font-mono" id="metricCoverage">98.4%</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Est. Branch Coverage</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3 shadow-md">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-amber-400 font-mono" id="metricEdgeCases">6</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Edge Cases Tercover</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl flex items-center space-x-3 shadow-md">
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20">
+            <i class="fa-solid fa-shield-virus"></i>
+          </div>
+          <div>
+            <div class="text-xl font-bold text-purple-400 font-mono" id="metricSecurityScore">A+</div>
+            <div class="text-[11px] text-slate-400 uppercase tracking-wider">Robustness Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Output Card with Tabs -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl flex flex-col flex-1 overflow-hidden">
+        
+        <!-- Output Tab Bar -->
+        <div class="bg-slate-950/80 px-4 pt-3 border-b border-slate-800 flex flex-wrap justify-between items-center gap-2">
+          <div class="flex space-x-1 sm:space-x-3 overflow-x-auto text-xs" id="outputTabButtons">
+            <button class="outTabBtn tab-active pb-3 px-2 flex items-center space-x-2 transition" data-tab="tabCode">
+              <i class="fa-solid fa-code"></i>
+              <span>Generated Test Suite</span>
+            </button>
+            <button class="outTabBtn text-slate-400 hover:text-slate-200 pb-3 px-2 flex items-center space-x-2 transition" data-tab="tabMatrix">
+              <i class="fa-solid fa-table"></i>
+              <span>Test Matrix</span>
+            </button>
+            <button class="outTabBtn text-slate-400 hover:text-slate-200 pb-3 px-2 flex items-center space-x-2 transition" data-tab="tabEdge">
+              <i class="fa-solid fa-arrows-split-up-and-left"></i>
+              <span>Edge & Boundary</span>
+            </button>
+            <button class="outTabBtn text-slate-400 hover:text-slate-200 pb-3 px-2 flex items-center space-x-2 transition" data-tab="tabGherkin">
+              <i class="fa-solid fa-cucumber"></i>
+              <span>BDD Gherkin</span>
+            </button>
+            <button class="outTabBtn text-emerald-400 hover:text-emerald-300 pb-3 px-2 flex items-center space-x-2 transition font-medium" data-tab="tabRunner">
+              <i class="fa-solid fa-circle-play"></i>
+              <span>Live Test Runner</span>
+            </button>
+          </div>
+
+          <div class="pb-2.5 flex items-center space-x-2">
+            <button id="btnCopyOutput" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-copy"></i>
+              <span>Salin</span>
+            </button>
+            <button id="btnDownloadOutput" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1 rounded border border-slate-700 transition flex items-center space-x-1">
+              <i class="fa-solid fa-file-arrow-down"></i>
+              <span>Simpan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Content Area -->
+        <div class="p-5 flex-1 flex flex-col overflow-y-auto">
+
+          <!-- TAB 1: CODE OUTPUT -->
+          <div id="tabCode" class="outTabContent flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-mono text-slate-400 flex items-center" id="generatedFilename">
+                <i class="fa-brands fa-python text-blue-400 mr-1.5"></i> test_order_checkout.py
+              </span>
+              <span class="text-[11px] text-slate-500 font-mono">Clean syntax · Follows PEP-8 / Industry Standard</span>
+            </div>
+            <div class="relative flex-1 bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs overflow-auto max-h-[560px]">
+              <pre><code id="codeOutput" class="text-emerald-300"># Menunggu sintesis... Klik tombol 'Sintesis Test Suite' di sebelah kiri.</code></pre>
+            </div>
+          </div>
+
+          <!-- TAB 2: TEST MATRIX TABLE -->
+          <div id="tabMatrix" class="outTabContent hidden flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-xs text-slate-300">
+                Matriks Pengujian Terstruktur: Partisi Ekivalensi & Analisis Nilai Batas.
+              </p>
+              <button id="btnExportMatrixCsv" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded border border-slate-700 transition">
+                <i class="fa-solid fa-file-csv mr-1 text-emerald-400"></i> Export CSV
+              </button>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-800/60 text-slate-300 border-b border-slate-800 font-medium">
+                    <th class="p-3 w-16">ID</th>
+                    <th class="p-3 w-28">Kategori</th>
+                    <th class="p-3">Skenario / Kasus Uji</th>
+                    <th class="p-3">Input Data</th>
+                    <th class="p-3">Hasil yang Diharapkan</th>
+                    <th class="p-3 w-24">Prioritas</th>
+                  </tr>
+                </thead>
+                <tbody id="matrixTableBody" class="divide-y divide-slate-800/60 text-slate-300 font-mono">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 3: EDGE CASES & SECURITY -->
+          <div id="tabEdge" class="outTabContent hidden flex-1 flex flex-col space-y-3">
+            <div class="p-3 bg-blue-950/40 border border-blue-800/40 rounded-xl text-xs text-blue-200 flex items-start space-x-2">
+              <i class="fa-solid fa-circle-exclamation text-blue-400 mt-0.5"></i>
+              <div>
+                <strong>Analisis Robustness & Edge Cases oleh AI Agent:</strong>
+                <p class="text-slate-300 mt-0.5">
+                  AI mendeteksi kemungkinan kegagalan di batas ekstrem, tipe data invalid, floating-point rounding precision, serta skenario celah keamanan.
+                </p>
+              </div>
+            </div>
+            <div id="edgeCasesContainer" class="space-y-3">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- TAB 4: BDD GHERKIN FEATURE -->
+          <div id="tabGherkin" class="outTabContent hidden flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-mono text-slate-400 flex items-center">
+                <i class="fa-solid fa-file-lines text-amber-400 mr-1.5"></i> order_checkout.feature (Cucumber BDD)
+              </span>
+              <span class="text-[11px] text-slate-500 font-mono">Given-When-Then Architecture</span>
+            </div>
+            <div class="relative flex-1 bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs overflow-auto max-h-[560px]">
+              <pre><code id="gherkinOutput" class="text-cyan-300"># BDD Scenarios akan muncul di sini...</code></pre>
+            </div>
+          </div>
+
+          <!-- TAB 5: INTERACTIVE TEST RUNNER SIMULATOR -->
+          <div id="tabRunner" class="outTabContent hidden flex-1 flex flex-col space-y-4">
+            <!-- Runner Control Card -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-3">
+              <div>
+                <h4 class="text-sm font-semibold text-white flex items-center">
+                  <i class="fa-solid fa-play text-emerald-400 mr-2"></i> Simulator Eksekusi Test Suite
+                </h4>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Simulasikan eksekusi test runner (PyTest / Jest virtual runner) secara interaktif langsung di browser.
+                </p>
+              </div>
+              <button id="btnRunSimulation" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-lg shadow-emerald-600/20">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Jalankan Pengujian (Execute All)</span>
+              </button>
+            </div>
+
+            <!-- Runner Progress Bar -->
+            <div id="runnerProgressBarContainer" class="space-y-1.5 hidden">
+              <div class="flex justify-between text-xs text-slate-400 font-mono">
+                <span id="runnerStatusText">Menjalankan assertion 1/14...</span>
+                <span id="runnerPercent">0%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                <div id="runnerProgressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-0 transition-all duration-150"></div>
+              </div>
+            </div>
+
+            <!-- Real-time Console Log Stream -->
+            <div class="flex-1 bg-slate-950 rounded-xl border border-slate-800 p-4 font-mono text-xs overflow-auto max-h-[400px]">
+              <div class="flex justify-between items-center pb-2 border-b border-slate-800/80 mb-2 text-slate-500 text-[11px]">
+                <span>TERMINAL EXECUTION LOG STREAM</span>
+                <span id="runnerDuration">Latency: 0ms</span>
+              </div>
+              <div id="runnerTerminalLogs" class="space-y-1 text-slate-300">
+                <p class="text-slate-500">$ virtual-test-runner --suite=all --verbose</p>
+                <p class="text-slate-500">Klik 'Jalankan Pengujian' untuk memulai visualisasi pengujian.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Project Overview & About Section (For Reviewers) -->
+  <section id="about-project" class="bg-slate-900 border-t border-slate-800 px-6 py-8 mt-6">
+    <div class="max-w-[1680px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+      <div class="space-y-2">
+        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+          <i class="fa-solid fa-bullseye text-blue-400"></i> Latar Belakang & Problem Statement
+        </h3>
+        <p class="text-slate-400 leading-relaxed">
+          Dalam siklus rekayasa perangkat lunak modern, pembuatan test suite manual memakan waktu hingga 35-40% dari total waktu pengembangan, sering kali mengabaikan skenario batas ekstrem (boundary values) dan celah keamanan input.
+        </p>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+          <i class="fa-solid fa-brain text-purple-400"></i> Solusi: AI Agent dengan 3-Layer Prompt
+        </h3>
+        <p class="text-slate-400 leading-relaxed">
+          Dikembangkan menggunakan IBM Bob melalui metodologi Vibe Coding dan Context Engineering, agen ini membedah kode sumber atau user story menjadi unit test komprehensif, matriks partisi ekivalensi, dan spesifikasi BDD Gherkin otomatis.
+        </p>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-check text-emerald-400"></i> Identitas Peserta & Capstone
+        </h3>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1 font-mono text-[11px]">
+          <div><strong class="text-slate-400">Nama:</strong> Rafi Dzaka Pratama Putra</div>
+          <div><strong class="text-slate-400">NIM:</strong> 123240104</div>
+          <div><strong class="text-slate-400">Mata Kuliah:</strong> Kapita Selekta (IF-A)</div>
+          <div><strong class="text-slate-400">Institusi:</strong> UPN "Veteran" Yogyakarta</div>
+          <div><strong class="text-slate-400">Tools:</strong> IBM Bob (Agent Mode)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL: Prompt Architecture & 3-Layer Specification (Slide 92-94 IBM Presentation) -->
+  <div id="promptModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 max-w-3xl w-full rounded-2xl shadow-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-950/50">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Arsitektur Prompt 3-Layer (IBM Bob)</h3>
+            <p class="text-xs text-slate-400">Sesuai materi slide Capstone Project Hacktiv8 x IBM SkillsBuild</p>
+          </div>
+        </div>
+        <button id="btnCloseModal" class="text-slate-400 hover:text-white text-lg transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-300">
+        
+        <!-- Layer 1 -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-blue-900/50 relative">
+          <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">LAYER 1</span>
+          <h4 class="text-sm font-bold text-blue-400 flex items-center mb-1">
+            <i class="fa-solid fa-user-tie mr-2"></i> Role & Context (Peran & Konteks)
+          </h4>
+          <p class="text-slate-400 mb-2">Bob berbicara ke siapa dan dalam konteks apa?</p>
+          <div class="p-3 bg-slate-900 rounded-lg font-mono text-[11px] text-slate-200 border border-slate-800">
+            "Anda adalah Senior QA Automation Architect dan Software Testing Specialist. Tugas Anda adalah menganalisis kode sumber, spesifikasi fungsional, atau user story dan menghasilkan test suite otomatis kelas enterprise berstandar industri."
+          </div>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-indigo-900/50 relative">
+          <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">LAYER 2</span>
+          <h4 class="text-sm font-bold text-indigo-400 flex items-center mb-1">
+            <i class="fa-solid fa-list-check mr-2"></i> Task & Requirements (Tugas & Kebutuhan Fitur)
+          </h4>
+          <p class="text-slate-400 mb-2">Apa yang harus benar-benar dibangun?</p>
+          <div class="p-3 bg-slate-900 rounded-lg font-mono text-[11px] text-slate-200 border border-slate-800 leading-relaxed">
+            "Bangun web application 'TestCraft AI' dengan: (1) Input multi-format (Code, Story, API), (2) Generator Test Suite lengkap (PyTest, Jest, JUnit, BDD Gherkin), (3) Tabel Matriks Partisi Ekivalensi & Nilai Batas, (4) Detektor Edge Case & Celah Keamanan, (5) Interactive Test Runner Simulator dengan visual progress, log latency, dan metrik cakupan cabang."
+          </div>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-emerald-900/50 relative">
+          <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LAYER 3</span>
+          <h4 class="text-sm font-bold text-emerald-400 flex items-center mb-1">
+            <i class="fa-solid fa-sliders mr-2"></i> Constraints & Output (Batasan & Standar Luaran)
+          </h4>
+          <p class="text-slate-400 mb-2">Bagaimana hasil akhirnya harus terlihat dan berfungsi?</p>
+          <div class="p-3 bg-slate-900 rounded-lg font-mono text-[11px] text-slate-200 border border-slate-800 leading-relaxed">
+            "Arsitektur frontend modular: 3 file terpisah (index.html, style.css, app.js). Gunakan Tailwind CSS (CDN) + Vanilla JS tanpa dependensi bundler/framework tambahan. Palet warna IBM Carbon (dark slate, cobalt blue #0f62fe, emerald, amber). Zero console errors, responsif mobile-to-desktop, clean code dengan komentar terstruktur."
+          </div>
+        </div>
+
+        <!-- Iteration Prompt -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-amber-900/50 relative">
+          <span class="absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">TARGETED REFINEMENT</span>
+          <h4 class="text-sm font-bold text-amber-400 flex items-center mb-1">
+            <i class="fa-solid fa-arrows-rotate mr-2"></i> Iterasi Prompt (Penyempurnaan Terarah)
+          </h4>
+          <p class="text-slate-400 mb-2">Penyempurnaan Layer 2 & 3 saat iterasi pengembangan:</p>
+          <div class="p-3 bg-slate-900 rounded-lg font-mono text-[11px] text-slate-200 border border-slate-800 leading-relaxed">
+            "Tambahkan fitur Simulator Eksekusi Test Runner secara interaktif dengan progress bar, log assertion per test case, serta tombol ekspor ke CSV dan unduh file test langsung (.py / .js) agar pengguna dapat memverifikasi kualitas test suite secara visual."
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-slate-800 bg-slate-950/50 flex justify-end">
+        <button id="btnModalCloseAction" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-lg font-medium transition">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
