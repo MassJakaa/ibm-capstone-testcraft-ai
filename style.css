@@ -1,110 +1,807 @@
-/* Custom Styles for TestCraft AI - IBM Bob Capstone Project */
+/* ═══════════════════════════════════════════════════════════════
+   TestCraft AI — style.css
+   IBM Carbon / Enterprise AI Design System
+   Palette: slate-950 bg · #0f62fe IBM blue · emerald · amber · purple
+   ═══════════════════════════════════════════════════════════════ */
 
+/* ─── Custom Properties ─────────────────────────────────────── */
 :root {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  --ibm-blue:      #0f62fe;
+  --ibm-blue-dark: #0043ce;
+  --ibm-blue-lite: #4589ff;
+  --bg-primary:    #020617;   /* slate-950 */
+  --bg-card:       #0f172a;   /* slate-900 */
+  --bg-surface:    #1e293b;   /* slate-800 */
+  --border:        #334155;   /* slate-700 */
+  --border-subtle: #1e293b;   /* slate-800 */
+  --text-primary:  #f1f5f9;
+  --text-muted:    #94a3b8;
+  --emerald:       #10b981;
+  --amber:         #f59e0b;
+  --purple:        #a855f7;
+  --radius-card:   14px;
+  --transition:    0.15s ease;
 }
+
+/* ─── Base Reset & Scrollbar ────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-pre, code, .font-mono {
-  font-family: var(--font-mono);
-}
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-}
+/* Custom scrollbar — webkit */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.5);
-  border-radius: 4px;
+  background: #334155;
+  border-radius: 99px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.8);
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Firefox scrollbar */
+* { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+
+/* Text selection */
+::selection { background: rgba(15, 98, 254, 0.35); color: #fff; }
+
+/* ─── Top Navigation Bar ────────────────────────────────────── */
+.topbar {
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-/* Code block line numbers simulation */
-.code-container {
-  counter-reset: line;
+/* Brand icon — IBM gradient */
+.brand-icon {
+  background: linear-gradient(135deg, var(--ibm-blue) 0%, #8a3ffc 100%);
+  box-shadow: 0 0 16px rgba(15, 98, 254, 0.4);
 }
 
-/* Pulse animation for active agent status */
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
+/* Live status indicator dot */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #64748b;
+}
+.status-dot.active {
+  background: var(--emerald);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
-.agent-live-dot {
-  animation: pulse-subtle 2s infinite ease-in-out;
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
 }
 
-/* Glassmorphism effects */
-.glass-panel {
-  background: rgba(30, 41, 59, 0.75);
+/* ─── Metrics Ribbon ─────────────────────────────────────────── */
+.metrics-ribbon {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.metric-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* ─── Glass Card ─────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  border-radius: var(--radius-card);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-card {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* Tab active indicator */
-.tab-active {
-  border-bottom: 2px solid #38bdf8;
-  color: #38bdf8;
+/* ─── Section Titles ─────────────────────────────────────────── */
+.section-title {
+  font-size: 13px;
   font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Test runner animation */
-@keyframes test-run-progress {
-  from { width: 0%; }
-  to { width: 100%; }
+.section-icon {
+  font-size: 14px;
+  opacity: 0.8;
 }
 
-.sim-running {
+/* ─── Input Type Tabs ─────────────────────────────────────────── */
+.input-type-tab {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  background: transparent;
+}
+
+.input-type-tab:hover { color: var(--text-primary); }
+
+.input-type-tab.active {
+  background: var(--ibm-blue);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(15, 98, 254, 0.4);
+}
+
+/* ─── Select Input ───────────────────────────────────────────── */
+.select-input {
+  background: rgba(2, 6, 23, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 7px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.select-input:focus { border-color: var(--ibm-blue); }
+
+/* ─── Code Textarea ──────────────────────────────────────────── */
+.code-textarea {
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: #a7f3d0;  /* emerald-200 */
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.code-textarea:focus { border-color: var(--ibm-blue); }
+
+.code-textarea::placeholder { color: #475569; }
+
+/* ─── Framework Radio Buttons ────────────────────────────────── */
+.framework-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.framework-radio:hover {
+  background: rgba(15, 98, 254, 0.08);
+  border-color: rgba(15, 98, 254, 0.3);
+}
+
+.framework-radio.active {
+  background: rgba(15, 98, 254, 0.12);
+  border-color: var(--ibm-blue);
+}
+
+.fw-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+
+.framework-radio.active .fw-dot {
+  border-color: var(--ibm-blue);
+  background: var(--ibm-blue);
+  box-shadow: 0 0 6px rgba(15, 98, 254, 0.6);
+}
+
+.fw-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.fw-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: rgba(51, 65, 85, 0.6);
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.framework-radio.active .fw-badge {
+  background: rgba(15, 98, 254, 0.2);
+  color: var(--ibm-blue-lite);
+}
+
+/* ─── Coverage Checkboxes ────────────────────────────────────── */
+.coverage-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.coverage-check:has(input:checked) .check-box {
+  background: var(--ibm-blue);
+  border-color: var(--ibm-blue);
+}
+
+.coverage-check:has(input:checked) .check-box::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 5px;
+  height: 8px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+}
+
+.check-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.check-desc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────── */
+.btn-generate {
+  background: linear-gradient(135deg, var(--ibm-blue) 0%, #4f46e5 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition);
+  box-shadow: 0 4px 20px rgba(15, 98, 254, 0.35);
   position: relative;
   overflow: hidden;
 }
 
-.sim-running::after {
+.btn-generate::before {
   content: '';
   position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.btn-generate:hover::before { opacity: 1; }
+.btn-generate:active { transform: scale(0.98); }
+
+.btn-generate.generating {
+  background: linear-gradient(135deg, #0043ce 0%, #3730a3 100%);
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.btn-action {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-action:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: var(--text-primary);
+  border-color: #475569;
+}
+
+.btn-secondary {
+  background: rgba(15, 98, 254, 0.12);
+  border: 1px solid rgba(15, 98, 254, 0.35);
+  color: var(--ibm-blue-lite);
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  transition: all var(--transition);
+}
+
+.btn-secondary:hover {
+  background: rgba(15, 98, 254, 0.2);
+  border-color: var(--ibm-blue);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-ghost:hover {
+  background: rgba(30, 41, 59, 0.6);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-run {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #fff;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 2px 12px rgba(5, 150, 105, 0.3);
+}
+
+.btn-run:hover { filter: brightness(1.1); }
+.btn-run:active { transform: scale(0.97); }
+.btn-run:disabled {
+  background: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ─── Output Tab Bar ─────────────────────────────────────────── */
+.output-tabs-bar {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.output-tabs-bar::-webkit-scrollbar { display: none; }
+
+.output-tab {
+  padding: 9px 18px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+
+.output-tab:hover { color: var(--text-primary); }
+
+.output-tab.active {
+  color: var(--ibm-blue-lite);
+  border-bottom-color: var(--ibm-blue);
+}
+
+/* ─── Tab Pane ───────────────────────────────────────────────── */
+.tab-pane { display: none; }
+.tab-pane.active { display: flex; flex-direction: column; }
+
+/* ─── Code Output ────────────────────────────────────────────── */
+.code-output {
+  background: rgba(2, 6, 23, 0.95);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: #a7f3d0;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  margin: 0;
+  min-height: 420px;
+  tab-size: 2;
+}
+
+.code-output code {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.75;
+  white-space: pre;
+  display: block;
+}
+
+/* Syntax highlight tokens */
+.kw  { color: #818cf8; }  /* keywords — indigo */
+.fn  { color: #34d399; }  /* functions — emerald */
+.str { color: #fbbf24; }  /* strings — amber */
+.cm  { color: #64748b; }  /* comments — slate */
+.nm  { color: #c084fc; }  /* names/decorators — purple */
+.nu  { color: #38bdf8; }  /* numbers — sky */
+.tp  { color: #f472b6; }  /* types — pink */
+
+/* ─── Test Matrix Table ──────────────────────────────────────── */
+.table-wrapper {
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.8);
+  max-height: 480px;
+}
+
+.test-matrix-table {
+  border-collapse: collapse;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+}
+
+.test-matrix-table thead tr {
+  background: rgba(30, 41, 59, 0.8);
+  position: sticky;
   top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.2), transparent);
-  animation: runner-sweep 1.5s infinite;
+  z-index: 2;
 }
 
-@keyframes runner-sweep {
-  0% { left: -100%; }
-  100% { left: 100%; }
+.test-matrix-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-/* Print / Screenshot friendly */
-@media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-  }
-  .no-print {
-    display: none !important;
-  }
+.test-matrix-table td {
+  padding: 9px 12px;
+  font-size: 11px;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.test-matrix-table tbody tr:hover { background: rgba(15, 98, 254, 0.05); }
+.test-matrix-table tbody tr:last-child td { border-bottom: none; }
+
+/* Priority badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+
+.badge-high   { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.badge-medium { background: rgba(245,158,11, 0.15);   color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.badge-low    { background: rgba(16,185,129, 0.12);   color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+/* Category badges */
+.cat-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 500;
+}
+.cat-happy    { background: rgba(15,98,254,0.15);  color: #60a5fa; }
+.cat-boundary { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.cat-negative { background: rgba(239,68,68,0.12);  color: #f87171; }
+.cat-security { background: rgba(168,85,247,0.15); color: #c084fc; }
+
+/* ─── Edge Cases Grid ────────────────────────────────────────── */
+.edge-card {
+  background: rgba(2, 6, 23, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 14px;
+  transition: border-color var(--transition);
+}
+
+.edge-card:hover { border-color: var(--border); }
+
+.edge-card-icon {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.edge-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.edge-card-body {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.edge-card-code {
+  display: block;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  color: #a7f3d0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* ─── Live Test Runner Terminal ──────────────────────────────── */
+.runner-terminal {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--border);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  color: #94a3b8;
+  overflow-y: auto;
+}
+
+.log-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+  font-size: 11px;
+  line-height: 1.6;
+  animation: fade-in 0.15s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.log-pass  { color: #34d399; }
+.log-fail  { color: #f87171; }
+.log-info  { color: #60a5fa; }
+.log-warn  { color: #fbbf24; }
+.log-muted { color: #475569; }
+.log-time  { color: #64748b; font-size: 10px; min-width: 50px; text-align: right; }
+
+/* ─── Runner [PASSED] / [FAILED] inline badges ───────────────── */
+.runner-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  vertical-align: middle;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  text-transform: uppercase;
+}
+
+.runner-pass {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.runner-fail {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+/* Branch coverage gauge */
+.branch-gauge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-label {
+  position: absolute;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* ─── Architecture Modal ─────────────────────────────────────── */
+.modal-backdrop {
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(12px);
+}
+
+.modal-card {
+  background: #0f172a;
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(15, 98, 254, 0.1);
+}
+
+.arch-layer {
+  padding: 16px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.layer-1 {
+  background: rgba(15, 98, 254, 0.08);
+  border: 1px solid rgba(15, 98, 254, 0.25);
+}
+
+.layer-2 {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.layer-3 {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.arch-layer-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.layer-1 .arch-layer-badge { color: var(--ibm-blue-lite); }
+.layer-2 .arch-layer-badge { color: #818cf8; }
+.layer-3 .arch-layer-badge { color: var(--emerald); }
+
+.arch-layer-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.arch-layer-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Refinement flow steps */
+.refinement-step {
+  padding: 5px 12px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.refinement-step.active {
+  background: rgba(15, 98, 254, 0.15);
+  border-color: var(--ibm-blue);
+  color: var(--ibm-blue-lite);
+  font-weight: 600;
+}
+
+/* ─── Toast ──────────────────────────────────────────────────── */
+.toast {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  animation: toast-in 0.25s ease;
+}
+
+.toast.success { border-color: rgba(16, 185, 129, 0.5); }
+.toast.error   { border-color: rgba(239, 68, 68, 0.5); }
+.toast.copy    { border-color: rgba(167, 139, 250, 0.5); }
+.toast.save    { border-color: rgba(16, 185, 129, 0.5); }
+.toast.csv     { border-color: rgba(251, 191, 36, 0.5); }
+
+/* Slide in from bottom-right */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Slide out to bottom-right (applied via .toast-hiding class) */
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0)    scale(1);    }
+  to   { opacity: 0; transform: translateY(10px) scale(0.96); }
+}
+
+.toast-hiding {
+  animation: toast-out 0.3s ease forwards;
+}
+
+/* ─── Generate Button Loading State ─────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 0.8s linear infinite; }
+
+/* ─── Gherkin Output Highlighting ───────────────────────────── */
+#gherkin-content .g-feature  { color: #c084fc; }
+#gherkin-content .g-scenario { color: #818cf8; }
+#gherkin-content .g-step     { color: #34d399; }
+#gherkin-content .g-keyword  { color: #60a5fa; }
+#gherkin-content .g-param    { color: #fbbf24; }
+#gherkin-content .g-comment  { color: #475569; }
+
+/* ─── Responsive Adjustments ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .metric-value { font-size: 16px; }
+  .output-tab   { padding: 9px 12px; font-size: 11px; }
+  .section-title { font-size: 11px; }
+}
+
+@media (max-width: 480px) {
+  .glass-card { padding: 14px; }
+}
+
+/* ─── Utility: hide visually for screen readers ──────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
 }
